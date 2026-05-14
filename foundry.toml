@@ -32,3 +32,9 @@ invariant = { runs = 256 }
 line_length = 120
 tab_width = 4
 bracket_spacing = true
+
+[rpc_endpoints]
+arbitrum_sepolia = "${ARBITRUM_SEPOLIA_RPC_URL}"
+
+[etherscan]
+arbitrum_sepolia = { key = "${ARBISCAN_API_KEY}", url = "https://api-sepolia.arbiscan.io/api", chain = 421614 }
