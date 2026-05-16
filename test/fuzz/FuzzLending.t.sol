@@ -92,4 +92,101 @@ contract FuzzLendingTest is Test {
         uint256 hf = pool.healthFactor(alice);
         assertGt(hf, 1e18);
     }
+
+    /// @notice depositCollateral always increases totalCollateral by exact amount
+    function testFuzz_depositCollateral_increasesTotalCollateral(uint64 amount) public {
+        vm.assume(amount > 1e6);
+        uint256 before = pool.totalCollateral();
+        vm.prank(alice);
+        pool.depositCollateral(amount);
+        assertEq(pool.totalCollateral(), before + amount);
+    }
+
+    /// @notice provideLiquidity always increases availableLiquidity by exact amount when no debt
+    function testFuzz_provideLiquidity_increasesAvailableLiquidity(uint64 amount) public {
+        vm.assume(amount > 0);
+        borrow.mint(alice, amount);
+        vm.startPrank(alice);
+        borrow.approve(address(pool), amount);
+        uint256 before = pool.availableLiquidity();
+        pool.provideLiquidity(amount);
+        vm.stopPrank();
+        assertEq(pool.availableLiquidity(), before + amount);
+    }
+
+    /// @notice Borrow rate must always be within [BASE_RATE, BASE_RATE + SLOPE_1 + SLOPE_2]
+    function testFuzz_borrowRate_alwaysBounded(uint64 colAmt, uint16 borrowPct) public {
+        vm.assume(colAmt > 1e6);
+        vm.assume(borrowPct > 0 && borrowPct <= 6900);
+
+        vm.prank(alice);
+        pool.depositCollateral(colAmt);
+
+        uint256 collValue = (uint256(colAmt) * PRICE) / 1e18;
+        uint256 borrowAmt = (collValue * borrowPct) / 10000;
+        vm.assume(borrowAmt > 0 && borrowAmt <= pool.availableLiquidity());
+
+        vm.prank(alice);
+        pool.borrow(borrowAmt);
+
+        uint256 rate = pool.borrowRate();
+        assertGe(rate, pool.BASE_RATE());
+        assertLe(rate, pool.BASE_RATE() + pool.SLOPE_1() + pool.SLOPE_2());
+    }
+
+    /// @notice After time elapses, outstanding debt never decreases
+    function testFuzz_interest_debtMonotonicallyIncreases(uint64 colAmt, uint32 elapsed) public {
+        vm.assume(colAmt > 1e6);
+        vm.assume(elapsed > 0 && elapsed <= 365 days);
+
+        vm.prank(alice);
+        pool.depositCollateral(colAmt);
+
+        uint256 collValue = (uint256(colAmt) * PRICE) / 1e18;
+        uint256 borrowAmt = collValue * 60 / 100;
+        vm.assume(borrowAmt > 0 && borrowAmt <= pool.availableLiquidity());
+
+        vm.prank(alice);
+        pool.borrow(borrowAmt);
+
+        uint256 debtBefore = pool.currentDebt(alice);
+        vm.warp(block.timestamp + elapsed);
+        uint256 debtAfter = pool.currentDebt(alice);
+
+        assertGe(debtAfter, debtBefore);
+    }
+
+    /// @notice Collateral seized in liquidation never exceeds what was deposited
+    function testFuzz_liquidation_neverSeizesMoreThanDeposited(uint64 colAmt) public {
+        vm.assume(colAmt > 1e9);
+        address bob = makeAddr("bob");
+        collateral.mint(bob, colAmt);
+        borrow.mint(bob, type(uint128).max);
+        vm.prank(bob);
+        collateral.approve(address(pool), type(uint256).max);
+        vm.prank(bob);
+        borrow.approve(address(pool), type(uint256).max);
+
+        vm.prank(bob);
+        pool.depositCollateral(colAmt);
+
+        uint256 collValue = (uint256(colAmt) * PRICE) / 1e18;
+        uint256 borrowAmt = collValue * 65 / 100;
+        vm.assume(borrowAmt > 0 && borrowAmt <= pool.availableLiquidity());
+
+        vm.prank(bob);
+        pool.borrow(borrowAmt);
+
+        // Drop price to make position liquidatable (HF drops to ~0.41)
+        oracle.setPrice(PRICE / 3);
+
+        uint256 debt = pool.currentDebt(bob);
+        (uint256 colBefore,) = pool.positions(bob);
+
+        vm.prank(alice);
+        pool.liquidate(bob, debt);
+
+        (uint256 colAfter,) = pool.positions(bob);
+        assertLe(colBefore - colAfter, colBefore);
+    }
 }

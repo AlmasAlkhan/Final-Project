@@ -10,6 +10,7 @@ import {RWACertificate} from "../src/tokens/RWACertificate.sol";
 import {RWAVault} from "../src/vault/RWAVault.sol";
 import {LendingPool} from "../src/lending/LendingPool.sol";
 import {ChainlinkAdapter} from "../src/oracle/ChainlinkAdapter.sol";
+import {IChainlinkAdapter} from "../src/interfaces/IChainlinkAdapter.sol";
 import {RWAFactory} from "../src/factory/RWAFactory.sol";
 import {RWAGovernor} from "../src/governance/RWAGovernor.sol";
 import {Treasury} from "../src/governance/Treasury.sol";
@@ -101,7 +102,7 @@ contract DeployScript is Script {
         console2.log("RWAVault:", address(vault));
 
         // 9. Lending pool
-        lendingPool = new LendingPool(IERC20(address(rwaToken)), IERC20(borrowTokenAddress), oracle, deployer);
+        lendingPool = new LendingPool(IERC20(address(rwaToken)), IERC20(borrowTokenAddress), IChainlinkAdapter(address(oracle)), deployer);
         console2.log("LendingPool:", address(lendingPool));
 
         // 10. Factory

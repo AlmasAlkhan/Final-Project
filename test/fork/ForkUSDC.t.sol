@@ -14,7 +14,6 @@ contract ForkUSDCTest is Test {
     using SafeERC20 for IERC20;
 
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
-    address constant USDC_WHALE = 0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503;
 
     LendingPool public pool;
     MockERC20 public collateral;
@@ -30,9 +29,8 @@ contract ForkUSDCTest is Test {
         oracle = new MockChainlinkAdapter(100e18, 1_000_000e18);
         pool = new LendingPool(collateral, IERC20(USDC), oracle, owner);
 
-        // Fund pool with real USDC from whale
-        vm.prank(USDC_WHALE);
-        IERC20(USDC).safeTransfer(owner, 1_000_000e6);
+        // Fund owner with real USDC via deal (sets storage directly, no whale dependency)
+        deal(USDC, owner, 1_000_000e6);
         vm.startPrank(owner);
         IERC20(USDC).approve(address(pool), type(uint256).max);
         // USDC has 6 decimals — oracle returns 18-decimal price

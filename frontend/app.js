@@ -61,6 +61,7 @@ const KNOWN_PROPOSALS = [
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let provider, signer, account;
+let borrowTokenDecimals = 18;
 const STATES = ["Pending","Active","Canceled","Defeated","Succeeded","Queued","Expired","Executed"];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -80,6 +81,14 @@ function showSuccess(id, msg) {
   setTimeout(() => el.classList.add("hidden"), 5000);
 }
 function setEl(id, val) { document.getElementById(id).textContent = val; }
+function fmtHealthFactor(hf) {
+  if (hf >= ethers.MaxUint256) return "∞";
+  const scaled = hf / BigInt(1e14); // 4 decimal places: 1e18 / 1e14 = 1e4
+  if (scaled > 99999999n) return ">9999.99";
+  const whole = scaled / 10000n;
+  const frac = scaled % 10000n;
+  return whole.toString() + "." + frac.toString().padStart(4, "0").slice(0, 2);
+}
 
 // ─── Network detection ────────────────────────────────────────────────────────
 async function checkNetwork() {
@@ -133,6 +142,8 @@ document.getElementById("btn-connect").addEventListener("click", async () => {
     document.getElementById("btn-connect").disabled = true;
 
     await checkNetwork();
+    const btContract = new ethers.Contract(ADDRESSES.borrowToken, ERC20_ABI, provider);
+    borrowTokenDecimals = await btContract.decimals();
     await loadBalances();
     await loadSubgraphStats();
     await loadLendingPosition();
@@ -200,11 +211,10 @@ async function loadLendingPosition() {
       pool.healthFactor(account),
       pool.availableLiquidity(),
     ]);
-    setEl("loan-collateral", fmt(pos.collateral) + " RWAT");
-    setEl("loan-debt", fmt(debt));
-    const hfNum = parseFloat(ethers.formatUnits(hf, 18));
-    setEl("loan-health", hf === ethers.MaxUint256 ? "∞" : hfNum.toFixed(2));
-    setEl("pool-liquidity", fmt(liq) + " USDC");
+    setEl("loan-collateral", fmt(pos.collateral, 18) + " RWAT");
+    setEl("loan-debt", fmt(debt, borrowTokenDecimals));
+    setEl("loan-health", fmtHealthFactor(hf));
+    setEl("pool-liquidity", fmt(liq, borrowTokenDecimals) + " USDC");
   } catch (err) {
     console.error("loadLendingPosition:", err);
   }
@@ -261,9 +271,17 @@ document.getElementById("btn-provide-liquidity").addEventListener("click", async
   const amtStr = document.getElementById("input-provide-liquidity").value;
   if (!amtStr || isNaN(amtStr)) return showError("lending-error", "Enter a valid amount");
   try {
-    const amount = ethers.parseEther(amtStr);
     const usdc = new ethers.Contract(ADDRESSES.borrowToken, ERC20_ABI, signer);
     const pool = new ethers.Contract(ADDRESSES.lendingPool, LENDING_ABI, signer);
+
+    const decimals = await usdc.decimals();
+    const amount = ethers.parseUnits(amtStr, decimals);
+
+    const balance = await usdc.balanceOf(account);
+    if (balance < amount) {
+      return showError("lending-error", `Insufficient borrow token balance. You have ${ethers.formatUnits(balance, decimals)}, need ${amtStr}.`);
+    }
+
     const allowance = await usdc.allowance(account, ADDRESSES.lendingPool);
     if (allowance < amount) {
       const tx = await usdc.approve(ADDRESSES.lendingPool, amount);
@@ -274,8 +292,13 @@ document.getElementById("btn-provide-liquidity").addEventListener("click", async
     showSuccess("lending-success", "Liquidity provided!");
     await loadLendingPosition();
   } catch (err) {
-    const msg = err?.info?.error?.message || err.message || "Transaction failed";
-    showError("lending-error", msg);
+    const reason = err?.reason
+      || err?.data?.message
+      || err?.info?.error?.message
+      || err?.error?.message
+      || err.message
+      || "Transaction failed";
+    showError("lending-error", reason);
   }
 });
 
@@ -289,6 +312,12 @@ document.getElementById("btn-deposit-collateral").addEventListener("click", asyn
     const amount = ethers.parseEther(amtStr);
     const rwa = new ethers.Contract(ADDRESSES.rwaToken, ERC20_ABI, signer);
     const pool = new ethers.Contract(ADDRESSES.lendingPool, LENDING_ABI, signer);
+
+    const balance = await rwa.balanceOf(account);
+    if (balance < amount) {
+      return showError("lending-error", `Insufficient RWA token balance. You have ${ethers.formatEther(balance)} RWAT, need ${amtStr}.`);
+    }
+
     const allowance = await rwa.allowance(account, ADDRESSES.lendingPool);
     if (allowance < amount) {
       const tx = await rwa.approve(ADDRESSES.lendingPool, amount);
@@ -300,8 +329,13 @@ document.getElementById("btn-deposit-collateral").addEventListener("click", asyn
     await loadBalances();
     await loadLendingPosition();
   } catch (err) {
-    const msg = err?.info?.error?.message || err.message || "Transaction failed";
-    showError("lending-error", msg);
+    const reason = err?.reason
+      || err?.data?.message
+      || err?.info?.error?.message
+      || err?.error?.message
+      || err.message
+      || "Transaction failed";
+    showError("lending-error", reason);
   }
 });
 
@@ -312,7 +346,9 @@ document.getElementById("btn-borrow").addEventListener("click", async () => {
   const amtStr = document.getElementById("input-borrow").value;
   if (!amtStr || isNaN(amtStr)) return showError("lending-error", "Enter a valid amount");
   try {
-    const amount = ethers.parseEther(amtStr);
+    const usdc = new ethers.Contract(ADDRESSES.borrowToken, ERC20_ABI, provider);
+    const decimals = await usdc.decimals();
+    const amount = ethers.parseUnits(amtStr, decimals);
     const pool = new ethers.Contract(ADDRESSES.lendingPool, LENDING_ABI, signer);
     const tx = await pool.borrow(amount);
     await tx.wait();
@@ -320,8 +356,13 @@ document.getElementById("btn-borrow").addEventListener("click", async () => {
     await loadBalances();
     await loadLendingPosition();
   } catch (err) {
-    const msg = err?.info?.error?.message || err.message || "Transaction failed";
-    showError("lending-error", msg);
+    const reason = err?.reason
+      || err?.data?.message
+      || err?.info?.error?.message
+      || err?.error?.message
+      || err.message
+      || "Transaction failed";
+    showError("lending-error", reason);
   }
 });
 

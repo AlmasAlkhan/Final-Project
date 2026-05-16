@@ -49,6 +49,18 @@ contract InvariantLendingTest is Test {
     function invariant_debtIndexNonDecreasing() public view {
         assertGe(pool.debtIndex(), 1e18);
     }
+
+    /// @notice Available liquidity must never exceed total committed liquidity
+    function invariant_availableLiquidity_leqTotalLiquidity() public view {
+        assertLe(pool.availableLiquidity(), pool.totalLiquidity());
+    }
+
+    /// @notice Borrow rate must always be within [BASE_RATE, BASE_RATE + SLOPE_1 + SLOPE_2]
+    function invariant_borrowRate_bounded() public view {
+        uint256 rate = pool.borrowRate();
+        assertGe(rate, pool.BASE_RATE());
+        assertLe(rate, pool.BASE_RATE() + pool.SLOPE_1() + pool.SLOPE_2());
+    }
 }
 
 contract LendingHandler is Test {
