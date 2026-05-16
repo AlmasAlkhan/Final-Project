@@ -41,16 +41,16 @@ A production-grade decentralized protocol for tokenizing real-world assets (RWA)
 
 | Contract | Address | Explorer |
 |----------|---------|---------|
-| GovernanceToken | `0x1AB6Ae8A96e85A70a39BA944b8Fb12BB67Dd20Fc` | [link](https://sepolia.arbiscan.io/address/0x1AB6Ae8A96e85A70a39BA944b8Fb12BB67Dd20Fc) |
-| RWAToken (proxy) | `0x24029BC435935451045D46dE0CF5c165bC08Da0B` | [link](https://sepolia.arbiscan.io/address/0x24029BC435935451045D46dE0CF5c165bC08Da0B) |
-| RWACertificate | `0xa6087B3f8B509CC9bcA6616FA43Fe8EAFfEe5B94` | [link](https://sepolia.arbiscan.io/address/0xa6087B3f8B509CC9bcA6616FA43Fe8EAFfEe5B94) |
-| RWAVault | `0x29FABA4ed78F47d9b567fC8B0fA8ccE4b78ac0c2` | [link](https://sepolia.arbiscan.io/address/0x29FABA4ed78F47d9b567fC8B0fA8ccE4b78ac0c2) |
-| LendingPool | `0xC354B84cb424e82EeB0D321b2df4D2e787FD6232` | [link](https://sepolia.arbiscan.io/address/0xC354B84cb424e82EeB0D321b2df4D2e787FD6232) |
-| ChainlinkAdapter | `0x62d67B4F0DB7a0807DeC6d3BFf937Bc07403C282` | [link](https://sepolia.arbiscan.io/address/0x62d67B4F0DB7a0807DeC6d3BFf937Bc07403C282) |
-| RWAFactory | `0x56EA1b0767508503435B42391510cfF043A99564` | [link](https://sepolia.arbiscan.io/address/0x56EA1b0767508503435B42391510cfF043A99564) |
-| TimelockController | `0x1A7A956c94cAe288d8630655502bC1Da441F7907` | [link](https://sepolia.arbiscan.io/address/0x1A7A956c94cAe288d8630655502bC1Da441F7907) |
-| RWAGovernor | `0x1595Be7b5393f12a0A3A8eA08ddf7519b7Bd127e` | [link](https://sepolia.arbiscan.io/address/0x1595Be7b5393f12a0A3A8eA08ddf7519b7Bd127e) |
-| Treasury | `0x3fe9a09d448918cf354d980ee06215301a76BC0F` | [link](https://sepolia.arbiscan.io/address/0x3fe9a09d448918cf354d980ee06215301a76BC0F) |
+| GovernanceToken | `0xA9C4dD622546de3F7fFDD02a905b6dc699098f86` | [link](https://sepolia.arbiscan.io/address/0xA9C4dD622546de3F7fFDD02a905b6dc699098f86) |
+| RWAToken (proxy) | `0x9E42552953aB57643BcfE9538e6A836efd6460c2` | [link](https://sepolia.arbiscan.io/address/0x9E42552953aB57643BcfE9538e6A836efd6460c2) |
+| RWACertificate | `0x039baa302696F9fB5EB5495f89DC479d09264404` | [link](https://sepolia.arbiscan.io/address/0x039baa302696F9fB5EB5495f89DC479d09264404) |
+| RWAVault | `0x112b3f5DA4625B721E419671a5800C6316e3ae97` | [link](https://sepolia.arbiscan.io/address/0x112b3f5DA4625B721E419671a5800C6316e3ae97) |
+| LendingPool | `0x57592da359112B36ffE81d2398fD47C64A4C1bEf` | [link](https://sepolia.arbiscan.io/address/0x57592da359112B36ffE81d2398fD47C64A4C1bEf) |
+| ChainlinkAdapter | `0xFc622aC612a816f8001E7A198F2ECC4AC320D14f` | [link](https://sepolia.arbiscan.io/address/0xFc622aC612a816f8001E7A198F2ECC4AC320D14f) |
+| RWAFactory | `0x80E809ea83D92E049D0B22A51570dfC3344CF9Cc` | [link](https://sepolia.arbiscan.io/address/0x80E809ea83D92E049D0B22A51570dfC3344CF9Cc) |
+| TimelockController | `0x19174b8cA8cDFF402A18B6a3ffe6Be924c2458E6` | [link](https://sepolia.arbiscan.io/address/0x19174b8cA8cDFF402A18B6a3ffe6Be924c2458E6) |
+| RWAGovernor | `0xC7FBe95018f1A8Ab44Ea82c18C5a7dC1Cf8029aD` | [link](https://sepolia.arbiscan.io/address/0xC7FBe95018f1A8Ab44Ea82c18C5a7dC1Cf8029aD) |
+| Treasury | `0xc557a92195350C268e1082b3542B58aDcA9142a1` | [link](https://sepolia.arbiscan.io/address/0xc557a92195350C268e1082b3542B58aDcA9142a1) |
 
 ## Setup
 

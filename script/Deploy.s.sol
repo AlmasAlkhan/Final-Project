@@ -60,12 +60,12 @@ contract DeployScript is Script {
         address[] memory executors = new address[](1);
         proposers[0] = deployer;
         executors[0] = address(0);
-        timelock = new TimelockController(2 days, proposers, executors, deployer);
+        timelock = new TimelockController(0, proposers, executors, deployer);
         console2.log("TimelockController:", address(timelock));
 
         // 3. Governor
         uint256 proposalThreshold = govToken.MAX_SUPPLY() / 100; // 1%
-        governor = new RWAGovernor(IVotes(address(govToken)), timelock, proposalThreshold);
+        governor = new RWAGovernor(IVotes(address(govToken)), timelock, proposalThreshold, 0, 10 minutes);
         timelock.grantRole(timelock.PROPOSER_ROLE(), address(governor));
         timelock.grantRole(timelock.CANCELLER_ROLE(), address(governor));
         console2.log("RWAGovernor:", address(governor));

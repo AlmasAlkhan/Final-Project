@@ -5,9 +5,9 @@ import {Script, console2} from "forge-std/Script.sol";
 import {RWAGovernor} from "../src/governance/RWAGovernor.sol";
 
 contract CreateProposalScript is Script {
-    address constant GOV_TOKEN  = 0x1AB6Ae8A96e85A70a39BA944b8Fb12BB67Dd20Fc;
-    address constant GOVERNOR   = 0x1595Be7b5393f12a0A3A8eA08ddf7519b7Bd127e;
-    address constant TREASURY   = 0x3fe9a09d448918cf354d980ee06215301a76BC0F;
+    address constant GOV_TOKEN  = 0xA9C4dD622546de3F7fFDD02a905b6dc699098f86;
+    address constant GOVERNOR   = 0xC7FBe95018f1A8Ab44Ea82c18C5a7dC1Cf8029aD;
+    address constant TREASURY   = 0xc557a92195350C268e1082b3542B58aDcA9142a1;
     address constant DEPLOYER   = 0x8EACdfe5d389f1378C78F0BdfDfa1Dae408bca4F;
 
     function run() external {
