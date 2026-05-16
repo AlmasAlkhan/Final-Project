@@ -82,4 +82,35 @@ contract AssemblyUtilsTest is Test {
         uint256 gasAfter = gasleft();
         console2.log("Solidity bpsOf (100x):", gasBefore - gasAfter, "gas");
     }
+
+    // ── eq32 ──────────────────────────────────────────────────────────────────
+
+    function test_eq32_assembly_equalBytes() public pure {
+        bytes32 a = keccak256("hello");
+        assertTrue(AssemblyUtils.eq32(a, a));
+    }
+
+    function test_eq32_assembly_differentBytes() public pure {
+        bytes32 a = keccak256("hello");
+        bytes32 b = keccak256("world");
+        assertFalse(AssemblyUtils.eq32(a, b));
+    }
+
+    function test_eq32_assembly_matchesSolidity(bytes32 a, bytes32 b) public pure {
+        assertEq(AssemblyUtils.eq32(a, b), AssemblyUtilsSolidity.eq32(a, b));
+    }
+
+    // ── Solidity equivalents ──────────────────────────────────────────────────
+
+    function test_min_solidity_returnsSmaller(uint256 a, uint256 b) public pure {
+        uint256 result = AssemblyUtilsSolidity.min(a, b);
+        assertLe(result, a);
+        assertLe(result, b);
+    }
+
+    function test_max_solidity_returnsLarger(uint256 a, uint256 b) public pure {
+        uint256 result = AssemblyUtilsSolidity.max(a, b);
+        assertGe(result, a);
+        assertGe(result, b);
+    }
 }

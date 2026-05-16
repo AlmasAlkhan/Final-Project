@@ -48,14 +48,14 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
 
       - name: Generate coverage report
-        run: forge coverage --report markdown --no-match-path "test/fork/*" > coverage-report.md
+        run: forge coverage --report summary --no-match-path "test/fork/*" --no-match-coverage "(test/|script/)" 2>/dev/null | tail -60 > coverage-report.md
 
       - name: Check minimum coverage
         run: |
-          COVERAGE=$(grep -oP '\d+\.\d+(?=%)' coverage-report.md | head -1)
-          echo "Line coverage: $COVERAGE%"
-          python3 -c "import sys; cov=float('$COVERAGE'); sys.exit(0 if cov >= 80 else 1)" || \
-            echo "::warning::Coverage below 90% — target is ≥90%"
+          COVERAGE=$(grep "Total" coverage-report.md | grep -oP '\d+\.\d+(?=%)' | head -1)
+          echo "Line coverage (src/ only): $COVERAGE%"
+          python3 -c "import sys; cov=float('${COVERAGE:-0}'); sys.exit(0 if cov >= 90 else 1)" || \
+            echo "::warning::Coverage ${COVERAGE}% — target is ≥90%"
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
