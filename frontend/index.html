@@ -91,13 +91,21 @@
           <span class="label">Health Factor</span>
           <span id="loan-health" class="value">—</span>
         </div>
+        <div class="card">
+          <span class="label">Pool Liquidity</span>
+          <span id="pool-liquidity" class="value">—</span>
+        </div>
       </div>
       <div class="form-row">
-        <input id="input-collateral" type="number" placeholder="Collateral amount" min="0" />
+        <input id="input-provide-liquidity" type="number" placeholder="Provide liquidity (USDC)" min="0" />
+        <button id="btn-provide-liquidity">Provide Liquidity</button>
+      </div>
+      <div class="form-row">
+        <input id="input-collateral" type="number" placeholder="Collateral amount (RWAT)" min="0" />
         <button id="btn-deposit-collateral">Deposit Collateral</button>
       </div>
       <div class="form-row">
-        <input id="input-borrow" type="number" placeholder="Borrow amount" min="0" />
+        <input id="input-borrow" type="number" placeholder="Borrow amount (USDC)" min="0" />
         <button id="btn-borrow">Borrow</button>
       </div>
       <div id="lending-error" class="error hidden"></div>

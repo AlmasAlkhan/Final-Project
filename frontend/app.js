@@ -7,6 +7,7 @@ const ADDRESSES = {
   vault:       "0x112b3f5DA4625B721E419671a5800C6316e3ae97",
   lendingPool: "0x57592da359112B36ffE81d2398fD47C64A4C1bEf",
   governor:    "0xC7FBe95018f1A8Ab44Ea82c18C5a7dC1Cf8029aD",
+  borrowToken: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
 };
 
 const TARGET_CHAIN_ID = 421614; // Arbitrum Sepolia
@@ -36,6 +37,8 @@ const LENDING_ABI = [
   "function depositCollateral(uint256)",
   "function borrow(uint256)",
   "function repay(uint256)",
+  "function provideLiquidity(uint256)",
+  "function availableLiquidity() view returns (uint256)",
   "function positions(address) view returns (uint256 collateral, uint256 scaledDebt)",
   "function healthFactor(address) view returns (uint256)",
   "function currentDebt(address) view returns (uint256)",
@@ -191,15 +194,17 @@ async function loadSubgraphStats() {
 async function loadLendingPosition() {
   try {
     const pool = new ethers.Contract(ADDRESSES.lendingPool, LENDING_ABI, provider);
-    const [pos, debt, hf] = await Promise.all([
+    const [pos, debt, hf, liq] = await Promise.all([
       pool.positions(account),
       pool.currentDebt(account),
       pool.healthFactor(account),
+      pool.availableLiquidity(),
     ]);
     setEl("loan-collateral", fmt(pos.collateral) + " RWAT");
     setEl("loan-debt", fmt(debt));
     const hfNum = parseFloat(ethers.formatUnits(hf, 18));
     setEl("loan-health", hf === ethers.MaxUint256 ? "∞" : hfNum.toFixed(2));
+    setEl("pool-liquidity", fmt(liq) + " USDC");
   } catch (err) {
     console.error("loadLendingPosition:", err);
   }
@@ -246,6 +251,31 @@ document.getElementById("btn-redeem").addEventListener("click", async () => {
   } catch (err) {
     const msg = err?.info?.error?.message || err.message || "Transaction failed";
     showError("vault-error", msg);
+  }
+});
+
+// ─── Lending: provide liquidity ──────────────────────────────────────────────
+document.getElementById("btn-provide-liquidity").addEventListener("click", async () => {
+  if (!signer) return showError("lending-error", "Connect wallet first");
+  if (!(await checkNetwork())) return;
+  const amtStr = document.getElementById("input-provide-liquidity").value;
+  if (!amtStr || isNaN(amtStr)) return showError("lending-error", "Enter a valid amount");
+  try {
+    const amount = ethers.parseEther(amtStr);
+    const usdc = new ethers.Contract(ADDRESSES.borrowToken, ERC20_ABI, signer);
+    const pool = new ethers.Contract(ADDRESSES.lendingPool, LENDING_ABI, signer);
+    const allowance = await usdc.allowance(account, ADDRESSES.lendingPool);
+    if (allowance < amount) {
+      const tx = await usdc.approve(ADDRESSES.lendingPool, amount);
+      await tx.wait();
+    }
+    const tx = await pool.provideLiquidity(amount);
+    await tx.wait();
+    showSuccess("lending-success", "Liquidity provided!");
+    await loadLendingPosition();
+  } catch (err) {
+    const msg = err?.info?.error?.message || err.message || "Transaction failed";
+    showError("lending-error", msg);
   }
 });
 
