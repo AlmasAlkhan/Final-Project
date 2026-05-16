@@ -37,21 +37,21 @@ A production-grade decentralized protocol for tokenizing real-world assets (RWA)
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-## Deployed Contracts (Arbitrum Sepolia)
+## Deployed Contracts (Ethereum Sepolia, chain 11155111)
 
 | Contract | Address | Explorer |
 |----------|---------|---------|
-| GovernanceToken | `0x...` | [link]() |
-| RWAToken (proxy) | `0x...` | [link]() |
-| RWAToken (impl V1) | `0x...` | [link]() |
-| RWACertificate | `0x...` | [link]() |
-| RWAVault | `0x...` | [link]() |
-| LendingPool | `0x...` | [link]() |
-| ChainlinkAdapter | `0x...` | [link]() |
-| RWAFactory | `0x...` | [link]() |
-| TimelockController | `0x...` | [link]() |
-| RWAGovernor | `0x...` | [link]() |
-| Treasury | `0x...` | [link]() |
+| GovernanceToken | `0x19174b8cA8cDFF402A18B6a3ffe6Be924c2458E6` | [link](https://sepolia.etherscan.io/address/0x19174b8cA8cDFF402A18B6a3ffe6Be924c2458E6) |
+| RWAToken (proxy) | `0x039baa302696F9fB5EB5495f89DC479d09264404` | [link](https://sepolia.etherscan.io/address/0x039baa302696F9fB5EB5495f89DC479d09264404) |
+| RWAToken (impl V1) | `0x9E42552953aB57643BcfE9538e6A836efd6460c2` | [link](https://sepolia.etherscan.io/address/0x9E42552953aB57643BcfE9538e6A836efd6460c2) |
+| RWACertificate | `0x112b3f5DA4625B721E419671a5800C6316e3ae97` | [link](https://sepolia.etherscan.io/address/0x112b3f5DA4625B721E419671a5800C6316e3ae97) |
+| RWAVault | `0x57592da359112B36ffE81d2398fD47C64A4C1bEf` | [link](https://sepolia.etherscan.io/address/0x57592da359112B36ffE81d2398fD47C64A4C1bEf) |
+| LendingPool | `0x80E809ea83D92E049D0B22A51570dfC3344CF9Cc` | [link](https://sepolia.etherscan.io/address/0x80E809ea83D92E049D0B22A51570dfC3344CF9Cc) |
+| ChainlinkAdapter | `0x3dbF7d0CcB978B1E270421616F394DE43FC52Ad5` | [link](https://sepolia.etherscan.io/address/0x3dbF7d0CcB978B1E270421616F394DE43FC52Ad5) |
+| RWAFactory | `0xC9474cFC3Bb2AA5649aCCb17a9DD7591f3812Cb4` | [link](https://sepolia.etherscan.io/address/0xC9474cFC3Bb2AA5649aCCb17a9DD7591f3812Cb4) |
+| TimelockController | `0xC7FBe95018f1A8Ab44Ea82c18C5a7dC1Cf8029aD` | [link](https://sepolia.etherscan.io/address/0xC7FBe95018f1A8Ab44Ea82c18C5a7dC1Cf8029aD) |
+| RWAGovernor | `0x2501117e6989c5587a962693Feda5474d46B35df` | [link](https://sepolia.etherscan.io/address/0x2501117e6989c5587a962693Feda5474d46B35df) |
+| Treasury | `0xFc622aC612a816f8001E7A198F2ECC4AC320D14f` | [link](https://sepolia.etherscan.io/address/0xFc622aC612a816f8001E7A198F2ECC4AC320D14f) |
 
 ## Setup
 
