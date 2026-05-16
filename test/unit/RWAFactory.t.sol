@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {RWAFactory} from "../../src/factory/RWAFactory.sol";
-import {RWACertificate} from "../../src/tokens/RWACertificate.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 contract RWAFactoryTest is Test {
     RWAFactory public factory;
@@ -79,7 +79,6 @@ contract RWAFactoryTest is Test {
     function test_deployedCertificate_hasCorrectAdmin() public {
         vm.prank(deployer);
         address cert = factory.deployCertificate(certAdmin);
-        RWACertificate c = RWACertificate(cert);
-        assertTrue(c.hasRole(c.DEFAULT_ADMIN_ROLE(), certAdmin));
+        assertTrue(IAccessControl(cert).hasRole(bytes32(0), certAdmin));
     }
 }

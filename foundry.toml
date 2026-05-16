@@ -4,6 +4,7 @@ out = "out"
 libs = ["lib"]
 test = "test"
 script = "script"
+skip = ["script/Deploy.s.sol", "script/Verify.s.sol"]
 solc_version = "0.8.24"
 optimizer = true
 optimizer_runs = 200

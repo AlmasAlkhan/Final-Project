@@ -6,7 +6,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
-import {IChainlinkAdapter} from "../oracle/IChainlinkAdapter.sol";
+import {IChainlinkAdapter} from "../interfaces/IChainlinkAdapter.sol";
 
 /// @title LendingPool — RWA-collateralized lending built from scratch
 /// @dev Linear interest rate model. Users deposit RWA tokens as collateral,

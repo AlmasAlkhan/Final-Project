@@ -1,46 +1,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IChainlinkAdapter} from "../../src/oracle/IChainlinkAdapter.sol";
+import {IChainlinkAdapter} from "../../src/interfaces/IChainlinkAdapter.sol";
 
 contract MockChainlinkAdapter is IChainlinkAdapter {
-    uint256 private _price;
-    uint256 private _reserve;
-    bool private _revertPrice;
-    bool private _revertReserve;
+    uint256 public price;
+    uint256 public reserve;
 
-    constructor(uint256 price, uint256 reserve) {
-        _price = price;
-        _reserve = reserve;
+    constructor(uint256 price_, uint256 reserve_) {
+        price = price_;
+        reserve = reserve_;
     }
 
-    function setPrice(uint256 price) external {
-        _price = price;
+    function getPrice() external view returns (uint256) {
+        return price;
     }
 
-    function setReserve(uint256 reserve) external {
-        _reserve = reserve;
+    function getProofOfReserve() external view returns (uint256) {
+        return reserve;
     }
 
-    function setRevertPrice(bool shouldRevert) external {
-        _revertPrice = shouldRevert;
-    }
-
-    function setRevertReserve(bool shouldRevert) external {
-        _revertReserve = shouldRevert;
-    }
-
-    function getPrice() external view override returns (uint256) {
-        require(!_revertPrice, "MockChainlinkAdapter: stale price");
-        return _price;
-    }
-
-    function getProofOfReserve() external view override returns (uint256) {
-        require(!_revertReserve, "MockChainlinkAdapter: stale reserve");
-        return _reserve;
-    }
-
-    function decimals() external pure override returns (uint8) {
+    function decimals() external pure returns (uint8) {
         return 18;
+    }
+
+    function setPrice(uint256 p) external {
+        price = p;
+    }
+
+    function setReserve(uint256 r) external {
+        reserve = r;
     }
 }
