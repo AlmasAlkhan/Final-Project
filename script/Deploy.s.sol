@@ -55,17 +55,20 @@ contract DeployScript is Script {
         govToken = new GovernanceToken(deployer);
         console2.log("GovernanceToken:", address(govToken));
 
-        // 2. Timelock (2-day delay, deployer as initial admin)
+        // 2. Timelock — default 2-day delay per spec; override with TIMELOCK_DELAY env var for testnet
+        uint256 timelockDelay = vm.envOr("TIMELOCK_DELAY", uint256(2 days));
         address[] memory proposers = new address[](1);
         address[] memory executors = new address[](1);
         proposers[0] = deployer;
         executors[0] = address(0);
-        timelock = new TimelockController(0, proposers, executors, deployer);
+        timelock = new TimelockController(timelockDelay, proposers, executors, deployer);
         console2.log("TimelockController:", address(timelock));
 
-        // 3. Governor
+        // 3. Governor — default spec: 1-day delay, 1-week period; override with env vars for testnet
+        uint48 votingDelay  = uint48(vm.envOr("VOTING_DELAY",  uint256(1 days)));
+        uint32 votingPeriod = uint32(vm.envOr("VOTING_PERIOD", uint256(1 weeks)));
         uint256 proposalThreshold = govToken.MAX_SUPPLY() / 100; // 1%
-        governor = new RWAGovernor(IVotes(address(govToken)), timelock, proposalThreshold, 0, 10 minutes);
+        governor = new RWAGovernor(IVotes(address(govToken)), timelock, proposalThreshold, votingDelay, votingPeriod);
         timelock.grantRole(timelock.PROPOSER_ROLE(), address(governor));
         timelock.grantRole(timelock.CANCELLER_ROLE(), address(governor));
         console2.log("RWAGovernor:", address(governor));
